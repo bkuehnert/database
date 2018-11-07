@@ -3,18 +3,18 @@
 
 #include "Tuple.h"
 
-struct Node {
+typedef struct Node 
+{
 	struct Node* next;
 	Tuple* data;
-};
+} Node;
 
-struct HashTable {
+typedef struct HashTable 
+{
 	struct Node** buckets;		
 	int size;
 	int count;
-};
+} HashTable;
 
-typedef struct Node Node;
-typedef struct HashTable HashTable;
 
 #endif
