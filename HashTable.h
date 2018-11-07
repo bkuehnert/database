@@ -1,5 +1,5 @@
-#ifndef _h_hashset
-#define _h_hashset
+#ifndef HASHSET_H
+#define HASHSET_H
 
 #include "Tuple.h"
 
