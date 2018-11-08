@@ -1,18 +1,24 @@
+#ifndef SET_H
+#define SET_H
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 typedef struct LongLinkedListSetNode
 {
 	void* tag;
 	struct LongLinkedListSetNode* next;
 } Node;
 
-typedef struct LongLinkedListSet
+typedef struct Set
 {
 	struct LongLinkedListSetNode* first;
 	struct LongLinkedListSetNode* last;
 	int size;
-} LongLinkedListSet;
+} Set;
 
-void add(LongLinkedListSet* list, void* add)
+void add(Set* list, void* add)
 {
 	if(list->size == 0)
 	{
@@ -38,7 +44,7 @@ void add(LongLinkedListSet* list, void* add)
 	}
 }
 
-int indexOf(LongLinkedListSet* list, void* checkLong)
+int indexOf(Set* list, void* checkLong)
 {
 	int i = 0;
 
@@ -53,7 +59,7 @@ int indexOf(LongLinkedListSet* list, void* checkLong)
 	return -1;
 }
 
-void freeList(LongLinkedListSet* list)
+void freeList(Set* list)
 {
 	Node* cur = list->first;
 
@@ -64,3 +70,5 @@ void freeList(LongLinkedListSet* list)
 		cur = next;
 	}
 }
+
+#endif
