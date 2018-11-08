@@ -4,15 +4,15 @@
 #include "Tuple.h"
 #include "Set.h"
 
-typedef struct Node 
+typedef struct ht_Node 
 {
-	struct Node* next;
+	struct ht_Node* next;
 	Tuple* data;
-} Node;
+} ht_Node;
 
 typedef struct HashTable 
 {
-	struct Node** buckets;		
+	struct ht_Node** buckets;		
 	int* key_vector;
 	int size;
 	int count;
@@ -20,6 +20,7 @@ typedef struct HashTable
 
 void ht_put(Tuple t);
 
+//should make this a hashmap itself
 Set ht_get(Tuple t);
 
 
