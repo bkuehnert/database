@@ -1,6 +1,6 @@
 typedef struct LongLinkedListSetNode
 {
-	long tag;
+	void* tag;
 	struct LongLinkedListSetNode* next;
 } Node;
 
@@ -11,7 +11,7 @@ typedef struct LongLinkedListSet
 	int size;
 } LongLinkedListSet;
 
-void add(LongLinkedListSet* list, long add)
+void add(LongLinkedListSet* list, void* add)
 {
 	if(list->size == 0)
 	{
@@ -37,7 +37,7 @@ void add(LongLinkedListSet* list, long add)
 	}
 }
 
-int indexOf(LongLinkedListSet* list, long checkLong)
+int indexOf(LongLinkedListSet* list, void* checkLong)
 {
 	int i = 0;
 
