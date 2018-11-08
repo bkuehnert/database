@@ -4,7 +4,7 @@
 typedef struct Tuple
 {
 	int n;
-	void* data;
+	char** data;
 } Tuple;
 
 #endif
