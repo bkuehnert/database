@@ -2,7 +2,7 @@
 #define HASHSET_H
 
 #include "Tuple.h"
-#include "Set.h"
+#include "TupleSet.h"
 
 typedef struct ht_Node 
 {
