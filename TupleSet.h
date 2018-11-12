@@ -6,16 +6,28 @@
 #include <string.h>
 #include "Tuple.h"
 
-typedef struct SetNode Node;
+typedef struct SetNode
+{
+	struct SetNode* left;
+	struct SetNode* right;
+	struct SetNode* in;
+	long hash;
+} Node;
 
-typedef struct TupleSet TupleSet;
+typedef struct TupleSet
+{
+	Node* head;
+	int size;
+} TupleSet;
 
-Set* createSet();
+TupleSet* createSet();
 
-void add(Set* list, Tuple* add);
+void add(TupleSet* list, Tuple* add);
 
-int indexOf(Set* list, Tuple* checkTuple);
+int indexOf(TupleSet* list, Tuple* checkTuple);
 
-void freeList(Set* list);
+void freeList(TupleSet* list);
+
+TupleSet* intersection(TupleSet* a, TupleSet * b);
 
 #endif
