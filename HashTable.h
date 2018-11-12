@@ -13,11 +13,11 @@ typedef struct ht_Node
 typedef struct HashTable 
 {
 	struct ht_Node** buckets;		
-	int* key_vector;
+	int key;
 	int count;
 } HashTable;
 
-HashTable* create_HashTable(int* key_vector);
+HashTable* create_HashTable(int key);
 
 void ht_put(HashTable* h, Tuple* t);
 
