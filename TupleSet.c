@@ -18,7 +18,7 @@ int tupleEql(Tuple* a, Tuple* b)
 
 TupleSet* createSet()
 {
-	TupleSet* set = (TupleSet*) calloc(sizeof(TupleSet*), 1);
+	TupleSet* set = (TupleSet*) calloc(sizeof(TupleSet), 1);
 	set->head = 0;
 	set->size = 0;
 	return set;
@@ -158,7 +158,46 @@ void freeList(TupleSet* list)
 	free(list);
 }
 
-TupleSet* intersection(TupleSet* a, TupleSet * b);
+void addAll(Node* head, TupleSet* addTo)
+{
+	if(head == 0)
+		return;
+
+	addAll(head->in, addTo);
+	addAll(head->left, addTo);
+	addAll(head->right, addTo);
+
+	add(addTo, head->data);
+}
+
+void addAllIntersect(Node* head, TupleSet* compare, TupleSet* addTo)
+{
+	if(head == 0)
+		return;
+
+	addAllIntersect(head->in, compare, addTo);
+	addAllIntersect(head->left, compare, addTo);
+	addAllIntersect(head->right,compare, addTo);
+
+	if(contains(compare, head->data))
+		add(addTo, head->data);
+}
+
+TupleSet* intersection(TupleSet* a, TupleSet * b)
+{
+	TupleSet* c = createSet();
+	addAllIntersect(a->head, b, c);
+
+	return c;
+}
+
+TupleSet* join(TupleSet* a, TupleSet * b)
+{
+	TupleSet* c = createSet();
+	addAll(a->head,c);
+	addAll(b->head,c);
+	return c;
+}
 
 void printHelper(Node* list)
 {

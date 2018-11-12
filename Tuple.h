@@ -9,6 +9,8 @@ typedef struct Tuple
 
 Tuple* create_Tuple(int n, char** data);
 
+Tuple* createTuple(int n, ...);
+
 void printTuple(Tuple* t);
 
 #endif

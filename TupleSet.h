@@ -31,6 +31,8 @@ void freeList(TupleSet* list);
 
 TupleSet* intersection(TupleSet* a, TupleSet * b);
 
+TupleSet* join(TupleSet* a, TupleSet * b);
+
 void print(TupleSet* set);
 
 #endif
