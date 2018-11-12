@@ -11,6 +11,7 @@ typedef struct SetNode
 	struct SetNode* left;
 	struct SetNode* right;
 	struct SetNode* in;
+	Tuple* data;
 	long hash;
 } Node;
 
@@ -24,10 +25,12 @@ TupleSet* createSet();
 
 void add(TupleSet* list, Tuple* add);
 
-int indexOf(TupleSet* list, Tuple* checkTuple);
+int contains(TupleSet* list, Tuple* checkTuple);
 
 void freeList(TupleSet* list);
 
 TupleSet* intersection(TupleSet* a, TupleSet * b);
+
+void print(TupleSet* set);
 
 #endif
