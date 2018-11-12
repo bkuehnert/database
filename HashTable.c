@@ -11,24 +11,18 @@ int sum_bytes(char* string)
 	return sum;
 }
 
-int hash(const int* key_vector, Tuple* t)
+int hash(const int key, Tuple* t)
 {
-	int sum = 0;
-	for(int i = 0; i < t->n; i++) {
-		if(key_vector[i]) {
-			sum += sum_bytes(t->data[i]);
-		}
-	}
-	return sum % 1009;
+	return sum_bytes(t->data[key]) % 1009;
 }
 
-HashTable* create_HashTable(int* key_vector)
+HashTable* create_HashTable(int key)
 {
 	HashTable* this = (HashTable*)malloc(sizeof(struct HashTable));
 	this->buckets = (ht_Node**)malloc(1009*sizeof(ht_Node*));
 	for(int i = 0; i < 1009; i++)
 		this->buckets[i] = NULL;
-	this->key_vector = key_vector;
+	this->key = key;
 	this->count = 0;
 	return this;
 }
@@ -42,9 +36,10 @@ ht_Node* create_htNode(Tuple* data) {
 
 void ht_put(HashTable* h, Tuple* t)
 {
-	ht_Node* bucket = h->buckets[hash(h->key_vector, t)];
+	ht_Node* bucket = h->buckets[hash(h->key, t)];
 	for(ht_Node* ptr = bucket; ptr != NULL; ptr = ptr->next)
 		if(ptr->next == NULL) ptr->next = create_htNode(t);
 	h->count++;
 }
+
 
