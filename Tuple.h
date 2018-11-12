@@ -7,4 +7,6 @@ typedef struct Tuple
 	char** data;
 } Tuple;
 
+Tuple* create_Tuple(int n, char** data);
+
 #endif
