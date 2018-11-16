@@ -1,6 +1,8 @@
 #include "TupleSet.h"
 #include "Tuple.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 int tupleEql(Tuple* a, Tuple* b)
 {
@@ -18,7 +20,7 @@ int tupleEql(Tuple* a, Tuple* b)
 
 TupleSet* createSet()
 {
-	TupleSet* set = (TupleSet*) calloc(sizeof(TupleSet*), 1);
+	TupleSet* set = (TupleSet*) calloc(sizeof(TupleSet), 1);
 	set->head = 0;
 	set->size = 0;
 	return set;
@@ -165,7 +167,9 @@ void printHelper(Node* list)
 	if(list == 0)
 		return;
 
+	printf("{");
 	printTuple(list->data);
+	printf("}");
 
 	printHelper(list->in);
 	printHelper(list->left);

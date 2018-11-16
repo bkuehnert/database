@@ -12,7 +12,9 @@ Tuple* create_Tuple(int n, char** data)
 
 void printTuple(Tuple* t)
 {
-	for(int i = 0; i < t->n; i++)
-		printf("%s, ", t->data[i]);
-	printf("\n");
+	for(int i = 0; i < t->n; i++) {
+		if(i == t->n-1) printf("%s", t->data[i]);
+		else printf("%s, ", t->data[i]);
+
+	}
 }
