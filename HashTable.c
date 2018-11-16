@@ -57,7 +57,8 @@ TupleSet* ht_get(HashTable* h, char* key)
 	ht_Node* bucket = h->buckets[sum_bytes(key) % 1009];
 	TupleSet* set = createSet();
 	for(ht_Node* ptr = bucket; ptr != NULL; ptr = ptr->next) {
-		add(set, ptr->data);
+		if(strcmp(key, ptr->data->data[h->key]) == 0) 
+			add(set, ptr->data);
 	}
 	return set;
 }
