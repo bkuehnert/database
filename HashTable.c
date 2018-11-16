@@ -16,6 +16,13 @@ int hash(const int key, Tuple* t)
 	return sum_bytes(t->data[key]) % 1009;
 }
 
+ht_Node* create_htNode(Tuple* data) {
+	ht_Node* this = (ht_Node*)malloc(sizeof(struct ht_Node));
+	this->data = data;
+	this->next = NULL;
+	return this;
+}
+
 HashTable* create_HashTable(int key)
 {
 	HashTable* this = (HashTable*)malloc(sizeof(struct HashTable));
@@ -27,18 +34,21 @@ HashTable* create_HashTable(int key)
 	return this;
 }
 
-ht_Node* create_htNode(Tuple* data) {
-	ht_Node* this = (ht_Node*)malloc(sizeof(struct ht_Node));
-	this->data = data;
-	this->next = NULL;
-	return this;
-}
 
 void ht_put(HashTable* h, Tuple* t)
 {
+	int hashed_value = hash(h->key, t);
 	ht_Node* bucket = h->buckets[hash(h->key, t)];
-	for(ht_Node* ptr = bucket; ptr != NULL; ptr = ptr->next)
-		if(ptr->next == NULL) ptr->next = create_htNode(t);
+	if(h->buckets[hashed_value] == NULL) {
+		h->buckets[hashed_value] = create_htNode(t);
+	} 
+	else {
+		for(ht_Node* ptr = h->buckets[hashed_value]; ptr != NULL; ptr = ptr->next)
+			if(ptr->next == NULL)  {
+				ptr->next = create_htNode(t);
+				break;
+			}
+	}
 	h->count++;
 }
 
@@ -46,9 +56,9 @@ TupleSet* ht_get(HashTable* h, char* key)
 {
 	ht_Node* bucket = h->buckets[sum_bytes(key) % 1009];
 	TupleSet* set = createSet();
-	for(ht_Node* ptr = bucket; ptr != NULL; ptr = ptr->next)
-		if(strcmp(ptr->data->data[h->key], key) == 0)
-			add(set, ptr->data);
+	for(ht_Node* ptr = bucket; ptr != NULL; ptr = ptr->next) {
+		add(set, ptr->data);
+	}
 	return set;
 }
 
