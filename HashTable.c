@@ -63,4 +63,19 @@ TupleSet* ht_get(HashTable* h, char* key)
 	return set;
 }
 
+TupleSet* ht_getAll(HashTable* h)
+{
+	TupleSet* set = createSet();
+
+	for(int i = 0; i < 1009; i++)
+	{
+		ht_Node* bucket = h->buckets[i];
+
+		for(ht_Node* ptr = bucket; ptr != NULL; ptr = ptr->next) {
+				add(set, ptr->data);
+		}
+	}
+
+	return set;
+}
 

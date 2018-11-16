@@ -24,6 +24,5 @@ void ht_put(HashTable* h, Tuple* t);
 //should make this a hashmap itself
 TupleSet* ht_get(HashTable* h, char* key);
 
-
-
+TupleSet* ht_getAll(HashTable* h);
 #endif
