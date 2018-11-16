@@ -16,3 +16,11 @@ Relation* create_Relation(int size, int primary_hash, int* secondary_hash, char*
 	return ret;
 }
 
+void rel_insert(Relation* r, Tuple* t)
+{
+	if( r->size != t->n ) return;
+
+	ht_put(r->primary, t);
+	for(int i = 0; i<r->size; i++)
+		if(r->secondary_hash[i]) ht_put(r->secondary[i], t);
+}

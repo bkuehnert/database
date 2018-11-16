@@ -22,5 +22,7 @@ bool rel_equalSchema(Relation* r1, Relation* r2);
 
 Relation* project(Relation* r1, bool* columns);
 
+void rel_insert(Relation* r, Tuple* t);
+
 
 #endif
