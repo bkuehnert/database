@@ -62,4 +62,3 @@ TupleSet* ht_get(HashTable* h, char* key)
 	return set;
 }
 
-
