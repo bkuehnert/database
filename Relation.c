@@ -25,33 +25,65 @@ void rel_insert(Relation* r, Tuple* t)
 		if(r->secondary_hash[i]) ht_put(r->secondary[i], t);
 }
 
+void setMatchHelper(TupleSet* set, int index, char* key, Node* node)
+{
+	if(node == 0)
+		return;
+
+	if(strcmp(key, node->data->data[index])!=0)
+	{
+		removeSet(set, node->data);
+	}
+
+	setMatchHelper(set, index, key, node->next);
+}
+
+void setMatch(TupleSet* set, int index, char* key)
+{
+	for(int i = 0; i < 1009; i++)
+	{
+		if(set->buckets[i]!=0)
+			setMatchHelper(set, index, key, set->buckets[i]);
+	}
+}
+
 TupleSet* rel_query(Relation* r, Tuple* t)
 {
-	if(r->size != t->n) return NULL;
+	if(r->size != t->n)
+		return 0;
 
-	int* searchable = (int*)calloc(t->n,sizeof(int));
+	TupleSet* set;
 
-	TupleSet* set = createSet();
-	for (int i = 0; i < t->n ; i++) {
-		if(strcmp(t->data[i], "*") != 0 ) {
-			searchable[i] = 1;
-			TupleSet* next = NULL;
-			if(r->primary_hash == i) {
-				searchable[i] = 0;
-				next = ht_get(r->primary, t->data[i]);
+	int primary = r->primary_hash;
+	HashTable* primaryTable = r->primary;
+
+	if(strcmp(t->data[primary], "*")==0)
+	{
+		set = ht_getAll(primaryTable);
+	}
+	else
+	{
+		set = ht_get(primaryTable, t->data[primary]);
+	}
+
+	for(int i = 0; i < r->size; i++)
+	{
+		if(i!=primary)
+		{
+			if(strcmp(t->data[i], "*")==0)
+				continue;
+
+			if(r->secondary_hash[i])
+			{
+				TupleSet* newPull = ht_get(r->secondary[i], t->data[i]);
+				TupleSet* intersect = intersection(set, newPull);
+				freeList(set);
+				freeList(newPull);
+				set = intersect;
 			}
-			else if(r->secondary_hash[i]){
-				searchable[i] = 0;
-				next = ht_get(r->secondary[i], t->data[i]);
-			} 
-			TupleSet* temp = set;
-			set = intersection(set, next);
-			freeList(temp);
-			freeList(next);
-		}
-		for (int j = 0; j < t->n; j++) {
-			if(searchable[j]) {
-				//search through the set, for each tuple x, remove if x->data[j] != t->data[j]
+			else
+			{
+				setMatch(set, i, t->data[i]);
 			}
 		}
 	}
