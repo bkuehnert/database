@@ -8,16 +8,13 @@
 
 typedef struct SetNode
 {
-	struct SetNode* left;
-	struct SetNode* right;
-	struct SetNode* in;
+	struct SetNode* next;
 	Tuple* data;
-	long hash;
 } Node;
 
 typedef struct TupleSet
 {
-	Node* head;
+	Node** buckets;
 	int size;
 } TupleSet;
 
@@ -34,5 +31,9 @@ TupleSet* intersection(TupleSet* a, TupleSet * b);
 TupleSet* join(TupleSet* a, TupleSet * b);
 
 void print(TupleSet* set);
+
+void removeSet(TupleSet* set, Tuple* remove);
+
+Tuple* get(int index);
 
 #endif

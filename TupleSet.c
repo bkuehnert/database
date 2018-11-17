@@ -21,14 +21,14 @@ int tupleEql(Tuple* a, Tuple* b)
 TupleSet* createSet()
 {
 	TupleSet* set = (TupleSet*) calloc(sizeof(TupleSet), 1);
-	set->head = 0;
+	set->buckets = (Node**)calloc(sizeof(Node*), 1009);
 	set->size = 0;
 	return set;
 }
 
-long setHash(Tuple* tuple)
+int setHash(Tuple* tuple)
 {
-	long hash = 0;
+	int hash = 0;
 
 	for(int i = 0; i < tuple->n; i++)
 	{
@@ -38,184 +38,190 @@ long setHash(Tuple* tuple)
 		}
 	}
 
-	return hash;
-}
-
-void addSet(Node* list, Node* add, long hash)
-{
-	if(list->hash > hash)
-	{
-		if(list->left == 0)
-		{
-			list->left = add;
-		}
-		else
-		{
-			addSet(list->left, add, hash);
-		}
-	}
-	else if(list->hash < hash)
-	{
-		if(list->right == 0)
-		{
-			list->right = add;
-		}
-		else
-		{
-			addSet(list->right, add, hash);
-		}
-	}
-	else
-	{
-		Node* cur = list;
-
-		while(cur!=0)
-		{
-			if(tupleEql(add->data, cur->data))
-				return;
-
-			if(cur->in != 0)
-				cur=cur->in;
-			else
-			{
-				cur->in = add;
-				return;
-			}
-		}
-
-		return;
-	}
+	return hash%1009;
 }
 
 void add(TupleSet* list, Tuple* add)
 {
-	long val = setHash(add);
-	Node* node = calloc(sizeof(Node), 1);
-	node->hash = val;
-	node->data = add;
-	node->in = 0;
-	node->left = 0;
-	node->right = 0;
+	int hash = setHash(add);
+	Node* toAdd = list->buckets[hash];
 
-	if(list->size == 0)
-		list->head = node;
-	else
-		addSet(list->head, node, val);
-
-	list->size++;
-}
-
-int containHelper(Node* head, Tuple* tup, long hash)
-{
-	if(head->hash == hash)
+	if(toAdd == 0)
 	{
-		Node* cur = head;
-
-		while(cur!=0)
+		Node* new = malloc(sizeof(Node));
+		new->data = add;
+		new->next = 0;
+		list->buckets[hash] = new;
+		list->size++;
+	}
+	else
+	{
+		while(toAdd->next != 0)
 		{
-			if(tupleEql(tup, cur->data))
-				return 1;
+			if(tupleEql(toAdd->data, add))
+				return;
 
-			cur=cur->in;
+			toAdd = toAdd->next;
 		}
 
-		return 0;
+		if(tupleEql(toAdd->data, add))
+			return;
+
+		Node* new = malloc(sizeof(Node));
+		new->data = add;
+		new->next = 0;
+		toAdd->next = new;
+		list->size++;
 	}
-
-	if(head->hash>hash)
-	{
-		if(head->left == 0)
-			return 0;
-
-		return containHelper(head->left, tup, hash);
-	}
-
-	if(head->right == 0)
-		return 0;
-
-	return containHelper(head->right, tup, hash);
 }
-
 
 int contains(TupleSet* list, Tuple* checkTuple)
 {
-	long hash = setHash(checkTuple);
-	return containHelper(list->head, checkTuple, hash);
+	int hash = setHash(checkTuple);
+	Node* bucket = list->buckets[hash];
+
+	while(bucket!=0)
+	{
+		if(tupleEql(bucket->data,checkTuple))
+			return 1;
+
+		bucket=bucket->next;
+	}
+
+	return 0;
 }
 
-void freeHelper(Node* list)
+void freeNode(Node* node)
 {
-	if(list == 0)
-		return;
+	if(node->next!=0)
+		freeNode(node->next);
 
-	freeHelper(list->in);
-	freeHelper(list->left);
-	freeHelper(list->right);
-	free(list);
+	free(node);
 }
 
 void freeList(TupleSet* list)
 {
-	freeHelper(list->head);
+	for(int i = 0; i < 1009; i++)
+	{
+		if(list->buckets[i]!=0)
+		{
+			freeNode(list->buckets[i]);
+		}
+	}
+
+	free(list->buckets);
 	free(list);
 }
 
-void addAll(Node* head, TupleSet* addTo)
+void addAll(TupleSet* in, TupleSet* copy)
 {
-	if(head == 0)
-		return;
-
-	addAll(head->in, addTo);
-	addAll(head->left, addTo);
-	addAll(head->right, addTo);
-
-	add(addTo, head->data);
+	for(int i = 0; i < 1009; i++)
+	{
+		Node* node = in->buckets[i];
+		addAllNodes(node, copy);
+	}
 }
 
-void addAllIntersect(Node* head, TupleSet* compare, TupleSet* addTo)
+void intersectAllNodes(Node* in, TupleSet* copy, TupleSet* compare)
 {
-	if(head == 0)
+	if(in == 0)
 		return;
 
-	addAllIntersect(head->in, compare, addTo);
-	addAllIntersect(head->left, compare, addTo);
-	addAllIntersect(head->right,compare, addTo);
+	if(contains(compare, in->data))
+	{
+		add(copy, in->data);
+	}
 
-	if(contains(compare, head->data))
-		add(addTo, head->data);
+	intersectAllNodes(in->next, copy, compare);
 }
 
-TupleSet* intersection(TupleSet* a, TupleSet * b)
+TupleSet* intersection(TupleSet* a, TupleSet* b)
 {
 	TupleSet* c = createSet();
-	addAllIntersect(a->head, b, c);
+
+	for(int i = 0; i < 1009; i++)
+	{
+		Node* node = b->buckets[i];
+		intersectAllNodes(node, c, a);
+	}
 
 	return c;
+}
+
+void addAllNodes(Node* in, TupleSet* copy)
+{
+	if(in == 0)
+		return;
+
+	add(copy, in->data);
+	addAllNodes(in->next, copy);
 }
 
 TupleSet* join(TupleSet* a, TupleSet * b)
 {
 	TupleSet* c = createSet();
-	addAll(a->head,c);
-	addAll(b->head,c);
+	addAll(a,c);
+	addAll(b,c);
 	return c;
 }
 
-void printHelper(Node* list)
+void printNode(Node* node)
 {
-	if(list == 0)
+	if(node==0)
 		return;
 
-	printf("{");
-	printTuple(list->data);
-	printf("}");
-
-	printHelper(list->in);
-	printHelper(list->left);
-	printHelper(list->right);
+	printf("(");
+	printTuple(node->data);
+	printf(")");
+	printNode(node->next);
 }
 
 void print(TupleSet* set)
 {
-	printHelper(set->head);
+	printf("{");
+
+	for(int i = 0; i < 1009; i++)
+	{
+		Node* node = set->buckets[i];
+		printNode(node);
+	}
+
+	printf("}");
+}
+
+int tryRemove(Tuple* remove, Node* prev, Node* cur)
+{
+	if(cur == 0)
+		return 0;
+
+	if(tupleEql(remove, cur->data))
+	{
+		prev->next = cur->next;
+		free(cur);
+		return 1;
+	}
+
+	return tryRemove(remove, cur, cur->next);
+}
+
+void removeSet(TupleSet* set, Tuple* remove)
+{
+	for(int i = 0; i < 1009; i++)
+	{
+		Node* node = set->buckets[i];
+
+		if(node!=0)
+		{
+			if(tupleEql(node->data, remove))
+			{
+				set->buckets[i] = node->next;
+				free(node);
+				set->size--;
+			}
+			else if(node->next!=0 & (tryRemove(remove, node, node->next)))
+			{
+				set->size--;
+			}
+		}
+	}
 }

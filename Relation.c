@@ -49,10 +49,12 @@ TupleSet* rel_query(Relation* r, Tuple* t)
 			freeList(temp);
 			freeList(next);
 		}
-		for (int i = 0; i < t->n; i++) {
-			if(searchable[i]) {
-				//search through the set, for each tuple x, remove if x->data[i] != t->data[i]
+		for (int j = 0; j < t->n; j++) {
+			if(searchable[j]) {
+				//search through the set, for each tuple x, remove if x->data[j] != t->data[j]
 			}
 		}
 	}
+
+	return set;
 }
