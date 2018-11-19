@@ -49,8 +49,8 @@ void ht_put(HashTable* h, Tuple* t)
 				ptr->next = create_htNode(t);
 				break;
 			}
+			if(tupleEql(t, ptr->data)) break;
 	}
-	h->count++;
 }
 
 TupleSet* ht_get(HashTable* h, char* key)

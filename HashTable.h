@@ -14,7 +14,6 @@ typedef struct HashTable
 {
 	struct ht_Node** buckets;		
 	int key;
-	int count;
 } HashTable;
 
 HashTable* create_HashTable(int key);
