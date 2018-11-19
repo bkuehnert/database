@@ -11,6 +11,10 @@ Tuple* create_Tuple(int n, char** data);
 
 Tuple* createTuple(int n, ...);
 
+void freeTuple(Tuple* t);
+
 void printTuple(Tuple* t);
+
+int matchTuple(Tuple* main, Tuple* exp);
 
 #endif

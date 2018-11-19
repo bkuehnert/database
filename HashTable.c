@@ -1,4 +1,5 @@
 #include "HashTable.h"
+#include "Tuple.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -79,3 +80,37 @@ TupleSet* ht_getAll(HashTable* h)
 	return set;
 }
 
+ht_Node* removeHelper(ht_Node* head, Tuple* match)
+{
+	if(head == NULL) return NULL;
+
+	if(matchTuple(head->data, match)) {
+		ht_Node* tmp = head->next;
+		htnodeFree(head);
+		return removeHelper(tmp, match);
+	}
+	head->next = removeHelper(head->next, match);
+	return head;
+}
+
+void ht_remove(HashTable* h, Tuple* t)
+{
+	int index = -1;
+	for (int i = 0; i < t->n; i++) 
+		if (strcmp(t->data[i], "*") != 0 && h->key == i) index = sum_bytes(t->data[i]) % 1009;
+
+	if(index == -1) {
+		for(int i = 0; i < 1009; i++) {
+			h->buckets[i] = removeHelper(h->buckets[i], t);
+		}	
+	}
+	else {
+		h->buckets[index] = removeHelper(h->buckets[index], t);
+	}
+}
+
+void htnodeFree(ht_Node* n)
+{
+	free(n->data);
+	free(n);
+}

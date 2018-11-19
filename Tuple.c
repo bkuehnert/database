@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <string.h>
 
 Tuple* create_Tuple(int n, char** data)
 {
@@ -34,4 +35,24 @@ void printTuple(Tuple* t)
 		else printf("%s, ", t->data[i]);
 
 	}
+}
+
+void freeTuple(Tuple* t)
+{
+	for(int i = 0; i < t->n; i++) {
+	//	free(t->data[i]);
+	}
+	//free(t->data);
+	free(t);
+}
+
+int matchTuple(Tuple* main, Tuple* reg)
+{
+	if(main == NULL) return 0;
+	for(int i = 0; i < main->n; i++) {
+		if(strcmp(reg->data[i],"*") !=0 && strcmp(main->data[i], reg->data[i]) != 0) return 0;
+	}
+	printf("match!\n");
+
+	return 1;
 }

@@ -90,3 +90,15 @@ TupleSet* rel_query(Relation* r, Tuple* t)
 
 	return set;
 }
+
+void rel_delete(Relation* r, Tuple* t)
+{
+	if(r->size != t->n) return;
+
+	ht_remove(r->primary, t);
+
+	for(int i = 0; i < r->size; i++)
+	{
+		if(r->secondary_hash[i]) ht_remove(r->secondary[i], t);
+	}
+}
