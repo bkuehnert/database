@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+void addAllNodes(Node* in, TupleSet* copy);
 
 int tupleEql(Tuple* a, Tuple* b)
 {
