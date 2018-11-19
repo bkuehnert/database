@@ -17,4 +17,6 @@ void printTuple(Tuple* t);
 
 int matchTuple(Tuple* main, Tuple* exp);
 
+int tupleEql(Tuple* a, Tuple* b);
+
 #endif

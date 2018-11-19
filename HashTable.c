@@ -31,7 +31,6 @@ HashTable* create_HashTable(int key)
 	for(int i = 0; i < 1009; i++)
 		this->buckets[i] = NULL;
 	this->key = key;
-	this->count = 0;
 	return this;
 }
 
@@ -44,12 +43,15 @@ void ht_put(HashTable* h, Tuple* t)
 		h->buckets[hashed_value] = create_htNode(t);
 	} 
 	else {
-		for(ht_Node* ptr = h->buckets[hashed_value]; ptr != NULL; ptr = ptr->next)
+		for(ht_Node* ptr = h->buckets[hashed_value]; ptr != NULL; ptr = ptr->next){
+
+		
 			if(ptr->next == NULL)  {
 				ptr->next = create_htNode(t);
 				break;
 			}
-			if(tupleEql(t, ptr->data)) break;
+			if(ptr != NULL && tupleEql(t, ptr->data)) break;
+		}
 	}
 }
 
