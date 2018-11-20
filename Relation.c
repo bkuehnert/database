@@ -102,3 +102,75 @@ void rel_delete(Relation* r, Tuple* t)
 		if(r->secondary_hash[i]) ht_remove(r->secondary[i], t);
 	}
 }
+
+Relation* project(Relation* r1, int* columns)
+{
+	char* searchArray[r1->size];
+	int newCols = 0;
+
+	for(int i = 0; i < r1->size; i++)
+	{
+		searchArray[i] = "*";
+
+		if(columns[i])
+		{
+			newCols++;
+		}
+	}
+
+	int* newHashSecondaries = calloc(sizeof(int), newCols);
+
+	int curSecHashInsert = 0;
+	int primaryHash = -1;
+
+	for(int i = 0; i < r1->size; i++)
+	{
+		if(columns[i] & r1->secondary_hash[i])
+		{
+			if(primaryHash == -1)
+				primaryHash = newHashSecondaries[curSecHashInsert++];
+			else
+				newHashSecondaries[curSecHashInsert++] = 1;
+		}
+		else if(i == r1->primary_hash)
+		{
+			if(primaryHash == -1)
+				primaryHash = newHashSecondaries[curSecHashInsert++];
+			else
+				newHashSecondaries[curSecHashInsert++] = 1;
+		}
+	}
+
+	Tuple* queryAll = create_Tuple(r1->size, searchArray);
+	TupleSet* set = rel_query(r1, queryAll);
+
+	Relation* newRelation = create_Relation(newCols, primaryHash == -1 ? 0 : primaryHash, newHashSecondaries, 0);
+
+	for(int i = 0; i < 1009; i++)
+	{
+		Node* bucket = set->buckets[i];
+
+		while(bucket!=0)
+		{
+			char** newData = malloc(sizeof(char*) * newCols);
+			Tuple* original = bucket->data;
+			int curInsert = 0;
+
+			for(int i = 0; i < r1->size; i++)
+			{
+				if(columns[i])
+				{
+					newData[curInsert++] = original->data[i];
+				}
+			}
+
+			Tuple* modified = create_Tuple(newCols, newData);
+			rel_insert(newRelation, modified);
+			bucket=bucket->next;
+		}
+	}
+
+	freeList(set);
+	free(queryAll);
+	return newRelation;
+}
