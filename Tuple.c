@@ -40,9 +40,9 @@ void printTuple(Tuple* t)
 void freeTuple(Tuple* t)
 {
 	for(int i = 0; i < t->n; i++) {
-	//	free(t->data[i]);
+		free(t->data[i]);
 	}
-	//free(t->data);
+	free(t->data);
 	free(t);
 }
 
