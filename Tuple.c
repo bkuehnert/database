@@ -52,7 +52,5 @@ int matchTuple(Tuple* main, Tuple* reg)
 	for(int i = 0; i < main->n; i++) {
 		if(strcmp(reg->data[i],"*") !=0 && strcmp(main->data[i], reg->data[i]) != 0) return 0;
 	}
-	printf("match!\n");
-
 	return 1;
 }
