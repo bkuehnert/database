@@ -88,7 +88,7 @@ ht_Node* removeHelper(ht_Node* head, Tuple* match)
 
 	if(matchTuple(head->data, match)) {
 		ht_Node* tmp = head->next;
-		htnodeFree(head);
+		free(head);
 		return removeHelper(tmp, match);
 	}
 	head->next = removeHelper(head->next, match);
@@ -109,10 +109,4 @@ void ht_remove(HashTable* h, Tuple* t)
 	else {
 		h->buckets[index] = removeHelper(h->buckets[index], t);
 	}
-}
-
-void htnodeFree(ht_Node* n)
-{
-	free(n->data);
-	free(n);
 }

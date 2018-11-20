@@ -25,4 +25,6 @@ Relation* project(Relation* r1, bool* columns);
 void rel_insert(Relation* r, Tuple* t);
 
 TupleSet* rel_query(Relation* r, Tuple* t);
+
+void rel_delete(Relation* r, Tuple* t);
 #endif
