@@ -1,4 +1,5 @@
 #include "Relation.h"
+#include <stdio.h>
 
 Relation* create_Relation(int size, int primary_hash, int* secondary_hash, char** names)
 {
@@ -173,4 +174,106 @@ Relation* project(Relation* r1, int* columns)
 	freeList(set);
 	free(queryAll);
 	return newRelation;
+}
+
+Relation* joinRelation(Relation* r1, Relation* r2, int col1, int col2)
+{
+	int* secondaryHashes = calloc(sizeof(int), r1->size+r2->size-1);
+	char** newNames = calloc(sizeof(char*), r1->size+r2->size-1);
+
+	for(int i = 0; i < r1->size; i++)
+	{
+		secondaryHashes[i] = r1->secondary_hash[i];
+		newNames[i] = r1->names[i];
+	}
+
+	for(int i = 0; i < col2; i++)
+	{
+		secondaryHashes[i+r1->size] = r2->secondary_hash[i];
+		newNames[i+r1->size] = r2->names[i];
+	}
+
+	for(int i = col2+1; i < r2->size; i++)
+	{
+		secondaryHashes[i+r1->size-1] = r2->secondary_hash[i];
+		newNames[i+r1->size-1] = r2->names[i];
+	}
+
+	Relation* newRelation = create_Relation(r1->size+r2->size-1, r1->primary_hash, secondaryHashes, newNames);
+
+	for(int i = 0; i < 1009; i++)
+	{
+		ht_Node* head1 = r1->primary->buckets[i];
+
+		while(head1!=0)
+		{
+			Tuple* tuple1 = head1->data;
+
+			for(int j = 0; j < 1009; j++)
+			{
+				ht_Node* head2 = r2->primary->buckets[j];
+
+				while(head2!=0)
+				{
+					Tuple* tuple2 = head2->data;
+
+					if(!strcmp(tuple1->data[col1], tuple2->data[col2]))
+					{
+						char** newData = calloc(sizeof(char*), r1->size+r2->size-1);
+
+						for(int i = 0; i < r1->size; i++)
+						{
+							newData[i] = tuple1->data[i];
+						}
+
+						for(int i = 0; i < col2; i++)
+						{
+							newData[i+r1->size] = tuple2->data[i];
+						}
+
+						for(int i = col2+1; i < r2->size; i++)
+						{
+							newData[i+r1->size-1] = tuple2->data[i];
+						}
+
+						rel_insert(newRelation, create_Tuple(r1->size+r2->size-1, newData));
+					}
+
+					head2 = head2->next;
+				}
+			}
+
+			head1=head1->next;
+		}
+	}
+
+	return newRelation;
+}
+
+void saveRel(Relation* rel, char* name)
+{
+	FILE* saveFile = fopen(name, "w");
+	fwrite(&rel->size, 1, sizeof(int), saveFile);
+	fwrite(&rel->primary, 1, sizeof(int), saveFile);
+
+	for(int i = 0; i < rel->size; i++)
+	{
+		fprintf(saveFile, "\n%s %c", rel->names[i], rel->secondary_hash[i] ? '1' : '0');
+	}
+
+	for(int i = 0; i < 1009; i++)
+	{
+		Node* bucket = rel->primary->buckets[i];
+
+		while(bucket!=0)
+		{
+			Tuple* toWrite = bucket->data;
+			bucket=bucket->next;
+		}
+	}
+}
+
+Relation* loadRel(char* name)
+{
+
 }

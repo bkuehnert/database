@@ -22,9 +22,15 @@ bool rel_equalSchema(Relation* r1, Relation* r2);
 
 Relation* project(Relation* r1, int* columns);
 
+Relation* joinRelation(Relation* r1, Relation* r2, int col1, int col2);
+
 void rel_insert(Relation* r, Tuple* t);
 
 TupleSet* rel_query(Relation* r, Tuple* t);
 
 void rel_delete(Relation* r, Tuple* t);
+
+void saveRel(Relation* rel, char* name);
+
+Relation* loadRel(char* name);
 #endif
