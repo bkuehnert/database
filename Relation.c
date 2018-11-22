@@ -253,8 +253,7 @@ Relation* joinRelation(Relation* r1, Relation* r2, int col1, int col2)
 void saveRel(Relation* rel, char* name)
 {
 	FILE* saveFile = fopen(name, "w");
-	fwrite(&rel->size, 1, sizeof(int), saveFile);
-	fwrite(&rel->primary, 1, sizeof(int), saveFile);
+	fprintf(saveFile, "%d %d", rel->primary_hash, rel->size);
 
 	for(int i = 0; i < rel->size; i++)
 	{
@@ -263,17 +262,83 @@ void saveRel(Relation* rel, char* name)
 
 	for(int i = 0; i < 1009; i++)
 	{
-		Node* bucket = rel->primary->buckets[i];
+		ht_Node* bucket = rel->primary->buckets[i];
 
 		while(bucket!=0)
 		{
 			Tuple* toWrite = bucket->data;
 			bucket=bucket->next;
+			fprintf(saveFile, "\n");
+
+			for(int i = 0; i < toWrite->n; i++)
+			{
+				if(i == toWrite->n-1) fprintf(saveFile, "%s", toWrite->data[i]);
+				else fprintf(saveFile, "%s ", toWrite->data[i]);
+			}
 		}
 	}
+
+	fclose(saveFile);
+}
+
+Tuple* readTuple(FILE* saveFile, int size)
+{
+	char** newDataString = calloc(sizeof(char*), size);
+
+	for(int i = 0; i < size; i++)
+	{
+		char* data = calloc(sizeof(char*), size);
+		int read = fscanf(saveFile, "%s", data);
+
+		if(read == EOF)
+		{
+			free(data);
+
+			for(int j = 0; j < i; j++)
+			{
+				free(newDataString[j]);
+			}
+
+			free(newDataString);
+			return 0;
+		}
+		else
+			newDataString[i] = data;
+	}
+
+	return create_Tuple(size, newDataString);
 }
 
 Relation* loadRel(char* name)
 {
+	FILE* saveFile = fopen(name, "r");
+	int size = 0;
+	int primary = 0;
+	fscanf(saveFile, "%d%d", &primary, &size);
+	char** newNames = calloc(sizeof(char*), size);
+	int* secondaryHashes = calloc(sizeof(int), size);
 
+	for(int i = 0; i < size; i++)
+	{
+		char* attribute = calloc(sizeof(char), 50);
+		int value = 0;
+		fscanf(saveFile, "%s%d", attribute, &value);
+		newNames[i] = attribute;
+		secondaryHashes[i] = 50;
+	}
+
+	Relation* newRel = create_Relation(size, primary, secondaryHashes, newNames);
+
+	while(1)
+	{
+		Tuple* read = readTuple(saveFile, size);
+
+		if(read == 0)
+			break;
+		else
+			rel_insert(newRel, read);
+	}
+
+	fclose(saveFile);
+	return newRel;
 }
