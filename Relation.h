@@ -20,7 +20,9 @@ Relation* create_Relation(int size, int primary_hash, int* secondary_hash, char*
 
 bool rel_equalSchema(Relation* r1, Relation* r2);
 
-Relation* project(Relation* r1, bool* columns);
+Relation* project(Relation* r1, int* columns);
+
+Relation* joinRelation(Relation* r1, Relation* r2, int col1, int col2);
 
 Relation* selection(Relation* r, bool notq, int column, char* string);
 
@@ -32,4 +34,7 @@ TupleSet* rel_query(Relation* r, Tuple* t);
 
 void rel_delete(Relation* r, Tuple* t);
 
+void saveRel(Relation* rel, char* name);
+
+Relation* loadRel(char* name);
 #endif

@@ -219,7 +219,7 @@ void removeSet(TupleSet* set, Tuple* remove)
 				free(node);
 				set->size--;
 			}
-			else if(node->next!=0 & (tryRemove(remove, node, node->next)))
+			else if((node->next!=0) & (tryRemove(remove, node, node->next)))
 			{
 				set->size--;
 			}
