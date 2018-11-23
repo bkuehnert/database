@@ -25,6 +25,14 @@ void rel_insert(Relation* r, Tuple* t)
 		if(r->secondary_hash[i]) ht_put(r->secondary[i], t);
 }
 
+void rel_insertSet(Relation* r, TupleSet* set)
+{
+
+	ht_addSet(r->primary, set);
+	for(int i = 0; i<r->size; i++)
+		if(r->secondary_hash[i]) ht_addSet(r->secondary[i], set);
+}
+
 void setMatchHelper(TupleSet* set, int index, char* key, Node* node)
 {
 	if(node == 0)
@@ -101,4 +109,32 @@ void rel_delete(Relation* r, Tuple* t)
 	{
 		if(r->secondary_hash[i]) ht_remove(r->secondary[i], t);
 	}
+}
+
+Relation* selection(Relation* r, bool notq, int column, char* string)
+{
+	Relation* ret = create_Relation(r->size, r->primary_hash, r->secondary_hash, r->names);
+	if(!notq) {
+		if(r->secondary_hash[column]) {
+			printf("???");
+			for(ht_Node* bucket = r->secondary[column]->buckets[hash_string(string)]; bucket != NULL; bucket = bucket->next)
+			rel_insert(ret, bucket->data);				
+		}
+		else if(r->primary_hash == column){
+			for(ht_Node* bucket = r->primary->buckets[hash_string(string)]; bucket != NULL; bucket = bucket->next)
+			rel_insert(ret, bucket->data);				
+		}
+		else {
+			for(int i = 0; i < 1009; i++) {
+				for(ht_Node* bucket = r->primary->buckets[i]; bucket != NULL; bucket = bucket->next) {
+					if(strcmp(bucket->data->data[column], string) == 0)
+						rel_insert(ret, bucket->data);
+				}
+			}
+		}
+	}
+	else {
+		printf("todo\n");
+	}
+	return ret;
 }

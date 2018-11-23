@@ -17,6 +17,11 @@ int hash(const int key, Tuple* t)
 	return sum_bytes(t->data[key]) % 1009;
 }
 
+int hash_string(char* string)
+{
+	return sum_bytes(string) % 1009;
+}
+
 ht_Node* create_htNode(Tuple* data) {
 	ht_Node* this = (ht_Node*)malloc(sizeof(struct ht_Node));
 	this->data = data;
@@ -108,5 +113,13 @@ void ht_remove(HashTable* h, Tuple* t)
 	}
 	else {
 		h->buckets[index] = removeHelper(h->buckets[index], t);
+	}
+}
+
+void ht_addSet(HashTable* h, TupleSet* set)
+{
+	for (int i = 0; i<1009; i++) {
+		for(Node* node = set->buckets[i]; node != NULL; node = node->next)
+			ht_put(h, node->data);
 	}
 }

@@ -20,12 +20,16 @@ HashTable* create_HashTable(int key);
 
 void htnodeFree(ht_Node* n);
 
+int hash_string(char* string);
+
 void ht_put(HashTable* h, Tuple* t);
 
-//should make this a hashmap itself
 TupleSet* ht_get(HashTable* h, char* key);
 
 TupleSet* ht_getAll(HashTable* h);
 
 void ht_remove(HashTable* h, Tuple* t);
+
+void ht_addSet(HashTable* h, TupleSet* set);
+
 #endif
