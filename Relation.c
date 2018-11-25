@@ -117,7 +117,6 @@ Relation* selection(Relation* r, bool notq, int column, char* string)
 	Relation* ret = create_Relation(r->size, r->primary_hash, r->secondary_hash, r->names);
 	if(!notq) {
 		if(r->secondary_hash[column]) {
-			printf("???");
 			for(ht_Node* bucket = r->secondary[column]->buckets[hash_string(string)]; bucket != NULL; bucket = bucket->next)
 			rel_insert(ret, bucket->data);				
 		}
