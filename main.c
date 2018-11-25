@@ -64,9 +64,9 @@ int main()
 
 	Relation* cdh = create_Relation(3, 0, cdh_hash, cdh_names);
 
-	char* cdh_t1[] = {"CSC101", "M", "9AM"};
-	char* cdh_t2[] = {"CSC101", "W", "9AM"};
-	char* cdh_t3[] = {"CSC101", "F", "9AM"};
+	char* cdh_t1[] = {"CS101", "M", "9AM"};
+	char* cdh_t2[] = {"CS101", "W", "9AM"};
+	char* cdh_t3[] = {"CS101", "F", "9AM"};
 	char* cdh_t4[] = {"EE200", "Tu", "10AM"};
 	char* cdh_t5[] = {"EE200", "W", "10AM"};
 	char* cdh_t6[] = {"EE200", "Th", "10AM"};
@@ -99,7 +99,7 @@ int main()
 	printRel(cdh);
 	printRel(cr);
 
-	printf("Executing lookup((\"CSC101\",\"12345\",\"*\"), CSG):\n");
+	printf("Executing lookup((\"CS101\",\"12345\",\"*\"), CSG):\n");
 	print(rel_query(csg, createTuple(3, "CS101", "12345", "*")));
 
 	//printf("\nExecuting lookup((\"CS205\",\"CS120\"), CP):\n");
@@ -131,9 +131,30 @@ int main()
 	//readd the deleted tuple so that it is normal
 	rel_insert(cr, createTuple(2, "CS101", "Turing Aud."));
 
-	printf("C. Brown's grade in CS101:\n");
+	printf("C. Brown's grade in CS101: ");
 	whatGrade("C. Brown", "CS101", snap, csg);
 
+	printf("\nL. Van Pelt's grade in PH100: ");
+	whatGrade("L. Van Pelt", "PH100",snap, csg);
+
+	printf("\nP. Patty's grade in CS101: ");
+	whatGrade("P. Patty", "CS101", snap, csg);
+
+	printf("\nC. Brown's location at 9AM on Monday: ");
+	whereIs("C. Brown", "9AM", "M", cdh, snap, csg, cr);
+
+	printf("\nP. Patty's location at 10AM on Wednesday: ");
+	whereIs("P. Patty", "10AM", "W", cdh, snap, csg, cr);
+
+	printf("\nL. Van Pelt's location at 10AM on Wednesday: ");
+	whereIs("L. Van Pelt", "10AM", "W", cdh, snap, csg, cr);
+
+	printf("\n\nResult of running selection on CSG with the condition Course=CS101\n");
+	printRel(selection(csg, 0, 0, "CS101"));
+	
+	printf("\nResult of running selection on the previous table on the column of StudentID\n");
+	int col[] = {0,1,0};
+	printRel(project(selection(csg, 0,0,"CS101"), col));
 
 	return 0;
 }
