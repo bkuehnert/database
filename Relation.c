@@ -155,9 +155,11 @@ Relation* project(Relation* r1, int* columns)
 	}
 
 	int* newHashSecondaries = calloc(sizeof(int), newCols);
+	char** newNames = calloc(sizeof(char), newCols);
 
 	int curSecHashInsert = 0;
 	int primaryHash = -1;
+	int nameIndex = 0;
 
 	for(int i = 0; i < r1->size; i++)
 	{
@@ -167,6 +169,8 @@ Relation* project(Relation* r1, int* columns)
 				primaryHash = newHashSecondaries[curSecHashInsert++];
 			else
 				newHashSecondaries[curSecHashInsert++] = 1;
+
+			newNames[nameIndex++] = r1->names[i];
 		}
 		else if(i == r1->primary_hash)
 		{
@@ -180,7 +184,7 @@ Relation* project(Relation* r1, int* columns)
 	Tuple* queryAll = create_Tuple(r1->size, searchArray);
 	TupleSet* set = rel_query(r1, queryAll);
 
-	Relation* newRelation = create_Relation(newCols, primaryHash == -1 ? 0 : primaryHash, newHashSecondaries, 0);
+	Relation* newRelation = create_Relation(newCols, primaryHash == -1 ? 0 : primaryHash, newHashSecondaries, newNames);
 
 	for(int i = 0; i < 1009; i++)
 	{
