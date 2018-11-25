@@ -102,8 +102,8 @@ int main()
 	printf("Executing lookup((\"CS101\",\"12345\",\"*\"), CSG):\n");
 	print(rel_query(csg, createTuple(3, "CS101", "12345", "*")));
 
-	//printf("\nExecuting lookup((\"CS205\",\"CS120\"), CP):\n");
-	//print(rel_query(cp, createTuple(2, "CS101", "*")));
+	printf("\nExecuting lookup((\"CS205\",\"CS120\"), CP):\n");
+	print(rel_query(cp, createTuple(2, "CS101", "CS120")));
 	
 	printf("\n\n\nExecuting delete((\"CS101\",*), CR)\n");
 	printf("First, the Course-Room table before:\n");

@@ -385,7 +385,6 @@ Relation* loadRel(char* name)
 
 void printRel(Relation* r)
 {
-	
 	for(int i = 0; i < r->size; i++) {
 		if(i == r->size-1) printf("%s\n", r->names[i]);
 		else printf("%s\t",r->names[i]);
