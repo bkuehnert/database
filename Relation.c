@@ -378,3 +378,18 @@ Relation* loadRel(char* name)
 	fclose(saveFile);
 	return newRel;
 }
+
+void printRel(Relation* r)
+{
+	for(int i = 0; i < r->size; i++) {
+		if(i == r->size-1) printf("%s\n", r->names[i]);
+		else printf("%s\t",r->names[i]);
+	}
+	for(int i = 0; i < 1009; i++) {
+		for(ht_Node* ptr = r->primary->buckets[i]; ptr != NULL; ptr = ptr->next) {
+			printTuple(ptr->data);
+			printf("\n");
+		}
+	}
+	printf("\n");
+}

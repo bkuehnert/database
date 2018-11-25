@@ -36,5 +36,7 @@ void rel_delete(Relation* r, Tuple* t);
 
 void saveRel(Relation* rel, char* name);
 
+void printRel(Relation* r);
+
 Relation* loadRel(char* name);
 #endif
