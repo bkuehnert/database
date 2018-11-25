@@ -156,7 +156,7 @@ Relation* project(Relation* r1, int* columns)
 	}
 
 	int* newHashSecondaries = calloc(sizeof(int), newCols);
-	char** newNames = calloc(sizeof(char), newCols);
+	char** newNames = calloc(sizeof(char*), newCols);
 
 	int curSecHashInsert = 0;
 	int primaryHash = -1;
@@ -171,7 +171,8 @@ Relation* project(Relation* r1, int* columns)
 			else
 				newHashSecondaries[curSecHashInsert++] = 1;
 
-			newNames[nameIndex++] = r1->names[i];
+			newNames[nameIndex] = r1->names[i];
+			nameIndex++;
 		}
 		else if(i == r1->primary_hash)
 		{
