@@ -43,19 +43,16 @@ HashTable* create_HashTable(int key)
 void ht_put(HashTable* h, Tuple* t)
 {
 	int hashed_value = hash(h->key, t);
-	ht_Node* bucket = h->buckets[hash(h->key, t)];
 	if(h->buckets[hashed_value] == NULL) {
 		h->buckets[hashed_value] = create_htNode(t);
 	} 
 	else {
 		for(ht_Node* ptr = h->buckets[hashed_value]; ptr != NULL; ptr = ptr->next){
-
-		
+			if(ptr != NULL && tupleEql(t, ptr->data)) break;
 			if(ptr->next == NULL)  {
 				ptr->next = create_htNode(t);
 				break;
 			}
-			if(ptr != NULL && tupleEql(t, ptr->data)) break;
 		}
 	}
 }
