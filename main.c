@@ -154,7 +154,8 @@ int main()
 	
 	printf("\nResult of running selection on the previous table on the column of StudentID\n");
 	int col[] = {0,1,0};
-	printRel(project(selection(csg, 0,0,"CS101"), col));
+	Relation* final = project(selection(csg, 0,0,"CS101"), col);
+	printRel(final);
 
 	return 0;
 }

@@ -47,7 +47,7 @@ void setMatchHelper(TupleSet* set, int index, char* key, Node* node)
 	{
 		setMatchHelper(set, index, key, node->next);
 	}
-	
+
 }
 
 void setMatch(TupleSet* set, int index, char* key)
@@ -121,11 +121,11 @@ Relation* selection(Relation* r, bool notq, int column, char* string)
 	if(!notq) {
 		if(r->secondary_hash[column]) {
 			for(ht_Node* bucket = r->secondary[column]->buckets[hash_string(string)]; bucket != NULL; bucket = bucket->next)
-			rel_insert(ret, bucket->data);				
+				rel_insert(ret, bucket->data);
 		}
 		else if(r->primary_hash == column){
 			for(ht_Node* bucket = r->primary->buckets[hash_string(string)]; bucket != NULL; bucket = bucket->next)
-			rel_insert(ret, bucket->data);				
+				rel_insert(ret, bucket->data);
 		}
 		else {
 			for(int i = 0; i < 1009; i++) {
@@ -166,22 +166,25 @@ Relation* project(Relation* r1, int* columns)
 
 	for(int i = 0; i < r1->size; i++)
 	{
-		if(columns[i] & r1->secondary_hash[i])
+		if(columns[i])
 		{
-			if(primaryHash == -1)
-				primaryHash = newHashSecondaries[curSecHashInsert++];
-			else
-				newHashSecondaries[curSecHashInsert++] = 1;
-
 			newNames[nameIndex] = r1->names[i];
 			nameIndex++;
-		}
-		else if(i == r1->primary_hash)
-		{
-			if(primaryHash == -1)
-				primaryHash = newHashSecondaries[curSecHashInsert++];
-			else
-				newHashSecondaries[curSecHashInsert++] = 1;
+
+			if(r1->secondary_hash[i])
+			{
+				if(primaryHash == -1)
+					primaryHash = newHashSecondaries[curSecHashInsert++];
+				else
+					newHashSecondaries[curSecHashInsert++] = 1;
+			}
+			else if(i == r1->primary_hash)
+			{
+				if(primaryHash == -1)
+					primaryHash = newHashSecondaries[curSecHashInsert++];
+				else
+					newHashSecondaries[curSecHashInsert++] = 1;
+			}
 		}
 	}
 
@@ -388,12 +391,12 @@ Relation* loadRel(char* name)
 
 void printRel(Relation* r)
 {
-	
+
 	for(int i = 0; i < r->size; i++) {
 		if(i == r->size-1) printf("%s\n", r->names[i]);
 		else printf("%s\t",r->names[i]);
 	}
-	
+
 	for(int i = 0; i < 1009; i++) {
 		for(ht_Node* ptr = r->primary->buckets[i]; ptr != NULL; ptr = ptr->next) {
 			printTuple(ptr->data);
