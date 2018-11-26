@@ -92,12 +92,41 @@ int main()
 	rel_insert(cr, create_Tuple(2, cr_t2));
 	rel_insert(cr, create_Tuple(2, cr_t3));
 
+	printf("Printing generated Tables:\n");
 
 	printRel(csg);
 	printRel(snap);
 	printRel(cp);
 	printRel(cdh);
 	printRel(cr);
+
+	printf("Testing saving functionality\n");
+
+	//Create sample table
+	int sample_hash[] = {0,0};
+	char* sample_names[] = {"A","B"};
+	Relation* sample = create_Relation(2, 0, sample_hash, sample_names);
+
+	char* sample_t1[] = {"a","c"};
+	char* sample_t2[] = {"b","b"};
+	char* sample_t3[] = {"a","a"};
+	char* sample_t4[] = {"d","a"};
+	char* sample_t5[] = {"c","b"};
+
+	rel_insert(sample, create_Tuple(2,sample_t1));
+	rel_insert(sample, create_Tuple(2,sample_t2));
+	rel_insert(sample, create_Tuple(2,sample_t3));
+	rel_insert(sample, create_Tuple(2,sample_t4));
+	rel_insert(sample, create_Tuple(2,sample_t5));
+
+	printf("Printing sample relation:\n");
+	printRel(sample);
+	saveRel(sample, "sample.rel");
+
+	printf("\nPrinting relation loaded from file:\n");
+	printRel(loadRel("sample.rel"));
+
+
 
 	printf("Executing lookup((\"CS101\",\"12345\",\"*\"), CSG):\n");
 	print(rel_query(csg, createTuple(3, "CS101", "12345", "*")));
@@ -126,36 +155,70 @@ int main()
 	printf("Now, the Course-Prerequisite table after:\n");
 	printRel(cp);
 
-	//DEMONSTRATE SAVING FUNCTIONALITY
 	
 	//readd the deleted tuple so that it is normal
 	rel_insert(cr, createTuple(2, "CS101", "Turing Aud."));
 
-	printf("C. Brown's grade in CS101: ");
-	whatGrade("C. Brown", "CS101", snap, csg);
 
-	printf("\nL. Van Pelt's grade in PH100: ");
-	whatGrade("L. Van Pelt", "PH100",snap, csg);
+	printf("Testing the what grade function:\n");
+	while(true) {
+		printf("What is the name of the student? (type \"quit\" to quit): ");
+		char input1[50];
+		fgets(input1, 50, stdin);
+		for(char* ptr = input1; *ptr != '\0'; ptr++)
+			if(*ptr == '\n') *ptr = '\0';
+		if(!strcmp(input1, "quit")) break;
+	
+		printf("What is the course to look up? (type \"quit\" to quit): ");
+		char input2[50];
+		fgets(input2, 50, stdin);
+		for(char* ptr = input2; *ptr != '\0'; ptr++)
+			if(*ptr == '\n') *ptr = '\0';
+		if(!strcmp(input2, "quit")) break;
 
-	printf("\nP. Patty's grade in CS101: ");
-	whatGrade("P. Patty", "CS101", snap, csg);
+		printf("%s grade in %s is: ", input1, input2);
+		whatGrade(input1,input2,snap,csg);
+		printf("\n");
+	}
 
-	printf("\nC. Brown's location at 9AM on Monday: ");
-	whereIs("C. Brown", "9AM", "M", cdh, snap, csg, cr);
+	printf("\nTesting the where is function:\n");
+	while(true) {
+		printf("What is the name of the student? (type \"quit\" to quit): ");
+		char input1[50];
+		fgets(input1, 50, stdin);
+		for(char* ptr = input1; *ptr != '\0'; ptr++)
+			if(*ptr == '\n') *ptr = '\0';
+		if(!strcmp(input1, "quit")) break;
+	
+		printf("What is the hour to look up? (type \"quit\" to quit): ");
+		char input2[50];
+		fgets(input2, 50, stdin);
+		for(char* ptr = input2; *ptr != '\0'; ptr++)
+			if(*ptr == '\n') *ptr = '\0';
+		if(!strcmp(input2, "quit")) break;
 
-	printf("\nP. Patty's location at 10AM on Wednesday: ");
-	whereIs("P. Patty", "10AM", "W", cdh, snap, csg, cr);
+		printf("What is the day to look up? (type \"quit\" to quit): ");
+		char input3[50];
+		fgets(input3, 50, stdin);
+		for(char* ptr = input3; *ptr != '\0'; ptr++)
+			if(*ptr == '\n') *ptr = '\0';
+		if(!strcmp(input3, "quit")) break;
 
-	printf("\nL. Van Pelt's location at 10AM on Wednesday: ");
-	whereIs("L. Van Pelt", "10AM", "W", cdh, snap, csg, cr);
+		printf("%s's location at %s on %s ", input1, input2, input3);
+		whereIs(input1, input2, input3, cdh, snap, csg, cr);
+		printf("\n");
+	}
 
 	printf("\n\nResult of running selection on CSG with the condition Course=CS101\n");
 	printRel(selection(csg, 0, 0, "CS101"));
 	
 	printf("\nResult of running selection on the previous table on the column of StudentID\n");
 	int col[] = {0,1,0};
-	Relation* final = project(selection(csg, 0,0,"CS101"), col);
-	printRel(final);
+	printRel(project(selection(csg, 0,0,"CS101"), col));
+
+	printf("\nResult of projecting on Day and Hour of the selection with condition Room=\"Turing Aud.\" of the natural join of CR and CDH.\n");
+	int col2[] = {0,0,1,1};
+	printRel(project(selection(joinRelation(cr,cdh,0,0),0,1,"Turing Aud."),col2));	
 
 	return 0;
 }
